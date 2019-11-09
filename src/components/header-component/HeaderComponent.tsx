@@ -11,7 +11,6 @@ import {
   Item,
   Input
 } from "native-base";
-import material from "../../../native-base-theme/variables/material";
 import IHeaderProps from "./IHeaderProps";
 
 export default class HeaderComponent extends Component<IHeaderProps, {}> {
@@ -22,7 +21,7 @@ export default class HeaderComponent extends Component<IHeaderProps, {}> {
     return (
       <Header searchBar>
         <Left>
-          <Button transparent>
+          <Button rounded onPress={this.props._openDrawer} transparent>
             <Icon name="menu" />
           </Button>
         </Left>

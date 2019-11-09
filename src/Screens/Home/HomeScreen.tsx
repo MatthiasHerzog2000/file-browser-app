@@ -11,7 +11,7 @@ import {
 import PathService from "../../services/PathService";
 import AuthService from "../../services/AuthService";
 import { IFile } from "../../models/file";
-import { Button, Content, Container } from "native-base";
+import { Button, Content, Container, Drawer } from "native-base";
 import IHomeProps from "./IHomeProps";
 import IHomeState from "./IHomeState";
 import FileComponent from "../../components/file-component/FileComponent";
@@ -19,8 +19,10 @@ import LoadingComponent from "../../components/loading-component/LoadingComponen
 import HeaderComponent from "../../components/header-component/HeaderComponent";
 import { globalStyles } from "../../../globalStyles";
 import material from "../../../native-base-theme/variables/material";
+import SideBarComponent from "../../components/sidebar-component/SideBarComponent";
 var backHandler: NativeEventSubscription;
 export default class HomeScreen extends Component<IHomeProps, IHomeState> {
+  drawer: any = {};
   constructor(props: IHomeProps) {
     super(props);
   }
@@ -79,6 +81,13 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
       { cancelable: false }
     );
   };
+  _closeDrawer = () => {
+    this.drawer._root.close();
+  };
+  Copy;
+  _openDrawer = () => {
+    this.drawer._root.open();
+  };
   _onPressFolder = async (path: string) => {
     console.log(path);
     AuthService.setCurrentPath(path);
@@ -99,40 +108,41 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
       return <LoadingComponent></LoadingComponent>;
     } else {
       return (
-        <Container>
-          <View style={globalStyles.header}></View>
-          <HeaderComponent
-            searchString={this.state.searchString}
-            _onTextChange={this._onTextChange}
-          ></HeaderComponent>
-          <Content>
-            <FlatList
-              data={this.state.directory.children}
-              extraData={this.state.searchString}
-              renderItem={({ item, index }) => {
-                if (item.name.includes(this.state.searchString)) {
-                  return (
-                    <FileComponent
-                      _onPressFolder={this._onPressFolder}
-                      file={item}
-                      key={index}
-                    ></FileComponent>
-                  );
-                } else {
-                  return null;
-                }
-              }}
-            ></FlatList>
-            <Button
-              onPress={() => {
-                AuthService.clear();
-                this.props.navigation.navigate("Auth");
-              }}
-            >
-              <Text>Logout</Text>
-            </Button>
-          </Content>
-        </Container>
+        <Drawer
+          ref={ref => {
+            this.drawer = ref;
+          }}
+          content={<SideBarComponent />}
+          onClose={() => this._closeDrawer()}
+        >
+          <Container>
+            <View style={globalStyles.header}></View>
+            <HeaderComponent
+              searchString={this.state.searchString}
+              _onTextChange={this._onTextChange}
+              _openDrawer={this._openDrawer}
+            ></HeaderComponent>
+            <Content>
+              <FlatList
+                data={this.state.directory.children}
+                extraData={this.state.searchString}
+                renderItem={({ item, index }) => {
+                  if (item.name.includes(this.state.searchString)) {
+                    return (
+                      <FileComponent
+                        _onPressFolder={this._onPressFolder}
+                        file={item}
+                        key={index}
+                      ></FileComponent>
+                    );
+                  } else {
+                    return null;
+                  }
+                }}
+              ></FlatList>
+            </Content>
+          </Container>
+        </Drawer>
       );
     }
   }

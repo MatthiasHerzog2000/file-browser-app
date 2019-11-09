@@ -48,7 +48,7 @@ export default {
 
   // Android
   androidRipple: true,
-  androidRippleColor: 'rgba(256, 256, 256, 0.3)',
+  androidRippleColor: 'rgba(78, 78, 78, 1)',
   androidRippleColorDark: 'rgba(0, 0, 0, 0.15)',
   buttonUppercaseAndroidText: true,
 
@@ -163,7 +163,7 @@ export default {
 
   // Footer
   footerHeight: 55,
-  footerDefaultBg: '#3F51B5',
+  footerDefaultBg: '#039BE5',
   footerPaddingBottom: 0,
 
   // FooterTab

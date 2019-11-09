@@ -5,3 +5,5 @@ export const MORE_INFORMATION_OPTION = "Mehr Informationen";
 export const MOVE_OPTION = "Verschieben";
 export const DELETE_OPTION = "Löschen";
 export const DOWNLOAD_OPTION = "Download";
+export const DRAWER_TITLE = "File-Browser-App";
+export const LOGOUT_STRING = "Ausloggen";
