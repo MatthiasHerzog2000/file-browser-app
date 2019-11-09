@@ -2,10 +2,10 @@ import { StatusBar, Platform, StyleSheet } from "react-native";
 
 export const globalStyles = StyleSheet.create({
   header: {
-    flex: 1,
     ...Platform.select({
       android: {
-        marginTop: StatusBar.currentHeight
+        height: StatusBar.currentHeight,
+        backgroundColor: "#039BE5"
       }
     })
   }

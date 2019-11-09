@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, ActivityIndicator } from "react-native";
+import { Text, View, ActivityIndicator, StatusBar } from "react-native";
 import IAuthLoadingProps from "./IAuthLoadingProps";
 import AuthService from "../../services/AuthService";
 

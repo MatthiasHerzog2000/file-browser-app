@@ -27,7 +27,7 @@ export default {
   platform,
 
   // Accordion
-  headerStyle: '#edebed',
+  headerStyle: '#039BE5',
   iconStyle: '#000',
   contentStyle: '#f5f4f5',
   expandedIconStyle: '#000',
@@ -176,7 +176,7 @@ export default {
 
   // Header
   toolbarBtnColor: '#fff',
-  toolbarDefaultBg: '#3F51B5',
+  toolbarDefaultBg: '#039BE5',
   toolbarHeight: 56,
   toolbarSearchIconSize: 23,
   toolbarInputColor: '#fff',
