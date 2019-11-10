@@ -4,4 +4,5 @@ export default interface IHomeState {
   directory: IFile;
   isLoading: boolean;
   searchString: string;
+  fabsVisible: boolean;
 }

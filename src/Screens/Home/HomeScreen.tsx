@@ -6,7 +6,9 @@ import {
   BackHandler,
   NativeEventSubscription,
   Alert,
-  StatusBar
+  StatusBar,
+  NativeSyntheticEvent,
+  NativeScrollEvent
 } from "react-native";
 import PathService from "../../services/PathService";
 import AuthService from "../../services/AuthService";
@@ -18,18 +20,20 @@ import FileComponent from "../../components/file-component/FileComponent";
 import LoadingComponent from "../../components/loading-component/LoadingComponent";
 import HeaderComponent from "../../components/header-component/HeaderComponent";
 import { globalStyles } from "../../../globalStyles";
-import material from "../../../native-base-theme/variables/material";
 import SideBarComponent from "../../components/sidebar-component/SideBarComponent";
+import FABComponent from "../../components/fab-component/FABComponent";
 var backHandler: NativeEventSubscription;
 export default class HomeScreen extends Component<IHomeProps, IHomeState> {
   drawer: any = {};
+  offset: number = 0;
   constructor(props: IHomeProps) {
     super(props);
   }
   state: IHomeState = {
     directory: null,
     isLoading: false,
-    searchString: ""
+    searchString: "",
+    fabsVisible: true
   };
   static navigationOptions = {
     header: null
@@ -103,6 +107,18 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
     console.log(text);
     this.setState({ searchString: text });
   };
+  _detectScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    var currentOffset = event.nativeEvent.contentOffset.y;
+    var direction = currentOffset > this.offset ? "down" : "up";
+    this.offset = currentOffset;
+    if (direction === "up" || currentOffset <= 0) {
+      this.setState({ fabsVisible: true });
+    } else {
+      this.setState({ fabsVisible: false });
+    }
+  };
+  _onUploadPress = () => {};
+  _onNewFolderPress = () => {};
   render() {
     if (this.state.isLoading) {
       return <LoadingComponent></LoadingComponent>;
@@ -112,7 +128,7 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
           ref={ref => {
             this.drawer = ref;
           }}
-          content={<SideBarComponent />}
+          content={<SideBarComponent navigation={this.props.navigation} />}
           onClose={() => this._closeDrawer()}
         >
           <Container>
@@ -122,7 +138,11 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
               _onTextChange={this._onTextChange}
               _openDrawer={this._openDrawer}
             ></HeaderComponent>
-            <Content>
+            <Content
+              onScroll={(event: NativeSyntheticEvent<NativeScrollEvent>) =>
+                this._detectScroll(event)
+              }
+            >
               <FlatList
                 data={this.state.directory.children}
                 extraData={this.state.searchString}
@@ -141,6 +161,20 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
                 }}
               ></FlatList>
             </Content>
+            {this.state.fabsVisible ? (
+              <View>
+                <FABComponent
+                  icon="folder-plus-outline"
+                  margin={70}
+                  _onClick={this._onUploadPress}
+                ></FABComponent>
+                <FABComponent
+                  icon="upload"
+                  margin={0}
+                  _onClick={this._onNewFolderPress}
+                ></FABComponent>
+              </View>
+            ) : null}
           </Container>
         </Drawer>
       );
