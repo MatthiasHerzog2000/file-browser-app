@@ -5,4 +5,6 @@ export default interface IHomeState {
   isLoading: boolean;
   searchString: string;
   fabsVisible: boolean;
+  fileDetailsModalVisible: boolean;
+  selectedFile: IFile;
 }

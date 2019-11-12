@@ -7,7 +7,7 @@ import {
   TouchableHighlight,
   View
 } from "react-native";
-import DateParser from "../../utils/date";
+import DateParser from "../../utils/DateParser";
 import { FileOptions } from "../../utils/FileOptions";
 import IconFinder from "../../utils/IconFinder";
 
@@ -24,7 +24,7 @@ export default class FileComponent extends Component<IFileProps, {}> {
       >
         <Row style={{ padding: 20 }}>
           <Col style={styles.leftItem}>
-            {IconFinder._renderIconType(this.props.file)}
+            {IconFinder._renderIconType(this.props.file, 30)}
           </Col>
 
           <Col
@@ -35,13 +35,16 @@ export default class FileComponent extends Component<IFileProps, {}> {
             <Text>{this.props.file.name}</Text>
             <Text note>
               Geändert am:
-              {DateParser.parseDateToString(new Date(this.props.file.mtime))}
+              {DateParser.parseDateToString(new Date(this.props.file.atime))}
             </Text>
           </Col>
 
           <Col style={styles.rightItem}>
             <TouchableHighlight
-              onPress={() => FileOptions.show()}
+              onPress={() => {
+                FileOptions.show();
+                this.props._onSelectedFile(this.props.file);
+              }}
               underlayColor="lightgrey"
               style={styles.optionHighlight}
             >

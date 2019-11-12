@@ -7,6 +7,8 @@ import {
   DELETE_OPTION,
   DOWNLOAD_OPTION
 } from "./staticStrings";
+import { FileOption } from "./FileOptionsEnum";
+import emitter from "tiny-emitter/instance";
 var BUTTONS = [
   { text: MORE_INFORMATION_OPTION, icon: "eye", iconColor: "#9E9E9E" },
   { text: MOVE_OPTION, icon: "move", iconColor: "#9E9E9E" },
@@ -14,19 +16,17 @@ var BUTTONS = [
   { text: DOWNLOAD_OPTION, icon: "download", iconColor: "#9E9E9E" },
   { text: DELETE_OPTION, icon: "trash", iconColor: "red" }
 ];
-var DESTRUCTIVE_INDEX = 3;
-var CANCEL_INDEX = 4;
 export class FileOptions {
   public static show() {
     ActionSheet.show(
       {
         options: BUTTONS,
-        cancelButtonIndex: CANCEL_INDEX,
-        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+        cancelButtonIndex: FileOption.Cancel,
+        destructiveButtonIndex: FileOption.Cancel,
         title: ACTIONSHEET_TITLE
       },
       buttonIndex => {
-        console.log(buttonIndex);
+        emitter.emit("OptionsClicked", buttonIndex);
       }
     );
   }

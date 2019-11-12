@@ -22,6 +22,10 @@ import HeaderComponent from "../../components/header-component/HeaderComponent";
 import { globalStyles } from "../../../globalStyles";
 import SideBarComponent from "../../components/sidebar-component/SideBarComponent";
 import FABComponent from "../../components/fab-component/FABComponent";
+import { ModalTypes } from "../../utils/ModalTypeEnum";
+import FileDetailsComponent from "../../components/file-details-component/FileDetailsComponent";
+import emitter from "tiny-emitter/instance";
+import { FileOption } from "../../utils/FileOptionsEnum";
 var backHandler: NativeEventSubscription;
 export default class HomeScreen extends Component<IHomeProps, IHomeState> {
   drawer: any = {};
@@ -33,12 +37,19 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
     directory: null,
     isLoading: false,
     searchString: "",
-    fabsVisible: true
+    fabsVisible: true,
+    fileDetailsModalVisible: false,
+    selectedFile: undefined
   };
   static navigationOptions = {
     header: null
   };
   async componentWillMount() {
+    emitter.on("OptionsClicked", buttonIndex => {
+      if (FileOption.More_Information === buttonIndex) {
+        this.setState({ fileDetailsModalVisible: true });
+      }
+    });
     console.log("cwm");
     this.setState({ isLoading: true });
     let directory: IFile = await PathService.getFiles(
@@ -55,6 +66,16 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
   componentWillUnmount() {
     backHandler.remove();
   }
+  _setModalVisible = (type: string) => {
+    if (type === ModalTypes.FileDetails) {
+      this.setState({
+        fileDetailsModalVisible: !this.state.fileDetailsModalVisible
+      });
+    }
+  };
+  _onSelectedFile = (selectedFile: IFile) => {
+    this.setState({ selectedFile });
+  };
   handleBackPress = async () => {
     const path = await AuthService.getCurrentPath();
     const lastPath = path
@@ -70,6 +91,7 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
     }
     return true;
   };
+
   _renderAlert = () => {
     Alert.alert(
       "Exit Application",
@@ -151,6 +173,7 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
                     return (
                       <FileComponent
                         _onPressFolder={this._onPressFolder}
+                        _onSelectedFile={this._onSelectedFile}
                         file={item}
                         key={index}
                       ></FileComponent>
@@ -174,6 +197,13 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
                   _onClick={this._onNewFolderPress}
                 ></FABComponent>
               </View>
+            ) : null}
+            {this.state.selectedFile ? (
+              <FileDetailsComponent
+                setModalVisible={this._setModalVisible}
+                fileDetailsModalVisible={this.state.fileDetailsModalVisible}
+                selectedFile={this.state.selectedFile}
+              ></FileDetailsComponent>
             ) : null}
           </Container>
         </Drawer>

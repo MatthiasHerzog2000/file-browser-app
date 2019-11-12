@@ -3,7 +3,7 @@ import { Icon } from "native-base";
 import React from "react";
 
 export default class IconFinder {
-  public static _renderIconType(file: IFile) {
+  public static _renderIconType(file: IFile, size: number) {
     let jsx: any;
     if (file.extension) {
       switch (file.extension) {
@@ -12,8 +12,7 @@ export default class IconFinder {
         case ".svg":
           jsx = (
             <Icon
-              style={{ color: "#add8e6" }}
-              color="darkGrey"
+              style={{ color: "#add8e6", fontSize: size }}
               type="FontAwesome5"
               name="file-image"
             />
@@ -22,7 +21,7 @@ export default class IconFinder {
         case ".pdf":
           jsx = (
             <Icon
-              style={{ color: "red" }}
+              style={{ color: "red", fontSize: size }}
               type="FontAwesome5"
               name="file-pdf"
             />
@@ -32,7 +31,7 @@ export default class IconFinder {
         case ".doc":
           jsx = (
             <Icon
-              style={{ color: "darkBlue" }}
+              style={{ color: "darkBlue", fontSize: size }}
               type="FontAwesome5"
               name="file-word"
             />
@@ -42,7 +41,7 @@ export default class IconFinder {
         case ".xls":
           jsx = (
             <Icon
-              style={{ color: "darkGreen" }}
+              style={{ color: "darkGreen", fontSize: size }}
               type="FontAwesome5"
               name="file-excel"
             />
@@ -50,28 +49,56 @@ export default class IconFinder {
           break;
         case ".js":
           jsx = (
-            <Icon color="darkGrey" type="Ionicons" name="logo-javascript" />
+            <Icon
+              style={{ color: "yellow", fontSize: size }}
+              type="Ionicons"
+              name="logo-javascript"
+            />
           );
           break;
         case ".html":
-          jsx = <Icon color="darkGrey" type="FontAwesome5" name="html5" />;
+          jsx = (
+            <Icon
+              style={{ color: "red", fontSize: size }}
+              type="FontAwesome5"
+              name="html5"
+            />
+          );
           break;
         case ".java":
-          jsx = <Icon color="darkGrey" type="FontAwesome5" name="java" />;
+          jsx = (
+            <Icon
+              style={{ color: "orange", fontSize: size }}
+              type="FontAwesome5"
+              name="java"
+            />
+          );
           break;
         case ".cs":
         case ".c":
         case ".h":
-          jsx = <Icon color="darkGrey" type="FontAwesome5" name="file-code" />;
+          jsx = (
+            <Icon
+              style={{ color: "blue", fontSize: size }}
+              type="FontAwesome5"
+              name="file-code"
+            />
+          );
           break;
         case ".csv":
-          jsx = <Icon color="darkGrey" type="FontAwesome5" name="file-csv" />;
+          jsx = (
+            <Icon
+              style={{ color: "darkgreen", fontSize: size }}
+              type="FontAwesome5"
+              name="file-csv"
+            />
+          );
           break;
         case ".pptx":
         case ".ppt":
           jsx = (
             <Icon
-              style={{ color: "orange" }}
+              style={{ color: "orange", fontSize: size }}
               type="FontAwesome5"
               name="file-powerpoint"
             />
@@ -81,22 +108,44 @@ export default class IconFinder {
         case ".targz":
         case ".rar":
           jsx = (
-            <Icon color="darkGrey" type="FontAwesome5" name="file-archive" />
+            <Icon
+              style={{ color: "black", fontSize: size }}
+              type="FontAwesome5"
+              name="file-archive"
+            />
           );
           break;
         case ".mp3":
         case ".wav":
         case ".wma":
-          jsx = <Icon color="darkGrey" type="FontAwesome5" name="file-audio" />;
+          jsx = (
+            <Icon
+              style={{ color: "#9E9E9E", fontSize: size }}
+              type="FontAwesome5"
+              name="file-audio"
+            />
+          );
           break;
         case ".avi":
         case ".mp4":
         case ".wmv":
         case ".mpg":
-          jsx = <Icon color="darkGrey" type="FontAwesome5" name="file-video" />;
+          jsx = (
+            <Icon
+              style={{ color: "#9E9E9E", fontSize: size }}
+              type="FontAwesome5"
+              name="file-video"
+            />
+          );
           break;
         default:
-          jsx = <Icon color="darkGrey" type="FontAwesome5" name="file" />;
+          jsx = (
+            <Icon
+              style={{ color: "#9E9E9E", fontSize: size }}
+              type="FontAwesome5"
+              name="file"
+            />
+          );
           break;
       }
     } else {
@@ -104,7 +153,7 @@ export default class IconFinder {
         <Icon
           type="FontAwesome5"
           name="folder"
-          style={{ fontSize: 30, width: 30, color: "#9E9E9E" }}
+          style={{ color: "#9E9E9E", fontSize: size }}
         />
       );
     }
