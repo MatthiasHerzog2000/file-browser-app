@@ -1,4 +1,4 @@
-import { IFile } from "../../models/file";
+import { IFile } from "../../models/IFile";
 
 export default interface IFileDetailsProps {
   fileDetailsModalVisible: boolean;

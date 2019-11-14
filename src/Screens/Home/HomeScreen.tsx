@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import PathService from "../../services/PathService";
 import AuthService from "../../services/AuthService";
-import { IFile } from "../../models/file";
+import { IFile } from "../../models/IFile";
 import { Button, Content, Container, Drawer } from "native-base";
 import IHomeProps from "./IHomeProps";
 import IHomeState from "./IHomeState";
@@ -26,6 +26,7 @@ import { ModalTypes } from "../../utils/ModalTypeEnum";
 import FileDetailsComponent from "../../components/file-details-component/FileDetailsComponent";
 import emitter from "tiny-emitter/instance";
 import { FileOption } from "../../utils/FileOptionsEnum";
+import FooterComponent from "../../components/footer-component/FooterComponent";
 var backHandler: NativeEventSubscription;
 export default class HomeScreen extends Component<IHomeProps, IHomeState> {
   drawer: any = {};
@@ -39,7 +40,8 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
     searchString: "",
     fabsVisible: true,
     fileDetailsModalVisible: false,
-    selectedFile: undefined
+    selectedFile: undefined,
+    markedFiles: []
   };
   static navigationOptions = {
     header: null
@@ -110,24 +112,49 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
   _closeDrawer = () => {
     this.drawer._root.close();
   };
-  Copy;
   _openDrawer = () => {
     this.drawer._root.open();
   };
-  _onPressFolder = async (path: string) => {
-    console.log(path);
-    AuthService.setCurrentPath(path);
+  _onPressFile = (file: IFile) => {
+    if (this.state.markedFiles.length != 0) {
+      this._markFileOrFolder(file);
+    } else {
+    }
+  };
+  _onPressFolder = async (file: IFile) => {
+    if (this.state.markedFiles.length != 0) {
+      this._markFileOrFolder(file);
+    } else {
+      AuthService.setCurrentPath(file.path);
 
-    let directory: IFile = await PathService.getFiles(path);
-    this.props.navigation.navigate({
-      routeName: "Home",
-      params: { path: path }
-    });
-    this.setState({ directory: directory });
+      let directory: IFile = await PathService.getFiles(file.path);
+      this.props.navigation.navigate({
+        routeName: "Home",
+        params: { path: file.path }
+      });
+      this.setState({ directory: directory });
+    }
   };
   _onTextChange = (text: string) => {
     console.log(text);
     this.setState({ searchString: text });
+  };
+  _markFileOrFolder = (selected: IFile) => {
+    const copyDir = this.state.directory;
+    const copyMarkedFiles = this.state.markedFiles;
+    let selectedFile = copyDir.children.find(
+      file => file.name === selected.name
+    );
+    selectedFile.active = !selectedFile.active;
+    if (selectedFile.active) {
+      copyMarkedFiles.push(selectedFile);
+    } else {
+      copyMarkedFiles.splice(
+        copyMarkedFiles.findIndex(sFile => sFile.name === selectedFile.name),
+        1
+      );
+    }
+    this.setState({ directory: copyDir, markedFiles: copyMarkedFiles });
   };
   _detectScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     var currentOffset = event.nativeEvent.contentOffset.y;
@@ -167,13 +194,16 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
             >
               <FlatList
                 data={this.state.directory.children}
-                extraData={this.state.searchString}
+                extraData={[this.state.searchString, this.state.directory]}
                 renderItem={({ item, index }) => {
                   if (item.name.includes(this.state.searchString)) {
                     return (
                       <FileComponent
                         _onPressFolder={this._onPressFolder}
                         _onSelectedFile={this._onSelectedFile}
+                        __markFileOrFolder={this._markFileOrFolder}
+                        _onPressFile={this._onPressFile}
+                        markedFiles={this.state.markedFiles}
                         file={item}
                         key={index}
                       ></FileComponent>
@@ -184,7 +214,7 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
                 }}
               ></FlatList>
             </Content>
-            {this.state.fabsVisible ? (
+            {this.state.fabsVisible && this.state.markedFiles.length === 0 ? (
               <View>
                 <FABComponent
                   icon="folder-plus-outline"
@@ -205,6 +235,9 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
                 selectedFile={this.state.selectedFile}
               ></FileDetailsComponent>
             ) : null}
+            <FooterComponent
+              markedFiles={this.state.markedFiles}
+            ></FooterComponent>
           </Container>
         </Drawer>
       );

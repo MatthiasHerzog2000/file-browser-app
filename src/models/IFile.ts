@@ -8,4 +8,5 @@ export interface IFile {
   key: string;
   extension?: string;
   children?: Array<IFile>;
+  active: boolean;
 }

@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { IFile } from "../models/file";
+import { IFile } from "../models/IFile";
 import AuthService from "./AuthService";
 
 const SERVER_URL = `http://10.0.0.27:8080/`;

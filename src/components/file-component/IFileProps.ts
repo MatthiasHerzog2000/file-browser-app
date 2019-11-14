@@ -1,7 +1,10 @@
-import { IFile } from "../../models/file";
+import { IFile } from "../../models/IFile";
 
 export default interface IFileProps {
   file: IFile;
-  _onPressFolder(path: string);
+  markedFiles: IFile[];
+  _onPressFolder(file: IFile);
+  _onPressFile(file: IFile);
   _onSelectedFile(file: IFile);
+  __markFileOrFolder(file: IFile);
 }

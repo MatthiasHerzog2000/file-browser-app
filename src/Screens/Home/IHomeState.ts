@@ -1,4 +1,4 @@
-import { IFile } from "../../models/file";
+import { IFile } from "../../models/IFile";
 
 export default interface IHomeState {
   directory: IFile;
@@ -7,4 +7,5 @@ export default interface IHomeState {
   fabsVisible: boolean;
   fileDetailsModalVisible: boolean;
   selectedFile: IFile;
+  markedFiles: IFile[];
 }

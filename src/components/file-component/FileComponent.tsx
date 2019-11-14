@@ -10,6 +10,8 @@ import {
 import DateParser from "../../utils/DateParser";
 import { FileOptions } from "../../utils/FileOptions";
 import IconFinder from "../../utils/IconFinder";
+import material from "../../../native-base-theme/variables/material";
+import { TYPE_DIR } from "../../utils/staticStrings";
 
 export default class FileComponent extends Component<IFileProps, {}> {
   constructor(props: IFileProps) {
@@ -20,11 +22,23 @@ export default class FileComponent extends Component<IFileProps, {}> {
     return (
       <TouchableNativeFeedback
         background={TouchableNativeFeedback.Ripple("#c6c6c6")}
-        onPress={() => this.props._onPressFolder(this.props.file.path)}
+        onPress={() =>
+          this.props.file.type === TYPE_DIR
+            ? this.props._onPressFolder(this.props.file)
+            : this.props._onPressFile(this.props.file)
+        }
+        onLongPress={() => this.props.__markFileOrFolder(this.props.file)}
       >
         <Row style={{ padding: 20 }}>
           <Col style={styles.leftItem}>
-            {IconFinder._renderIconType(this.props.file, 30)}
+            {this.props.file.active ? (
+              <Icon
+                name="check"
+                style={{ color: material.buttonPrimaryBg }}
+              ></Icon>
+            ) : (
+              IconFinder._renderIconType(this.props.file, 30)
+            )}
           </Col>
 
           <Col
@@ -38,25 +52,26 @@ export default class FileComponent extends Component<IFileProps, {}> {
               {DateParser.parseDateToString(new Date(this.props.file.atime))}
             </Text>
           </Col>
-
-          <Col style={styles.rightItem}>
-            <TouchableHighlight
-              onPress={() => {
-                FileOptions.show();
-                this.props._onSelectedFile(this.props.file);
-              }}
-              underlayColor="lightgrey"
-              style={styles.optionHighlight}
-            >
-              <View style={styles.rightItem}>
-                <Icon
-                  style={[{ fontSize: 20, marginTop: 4, color: "#9E9E9E" }]}
-                  type="FontAwesome5"
-                  name="ellipsis-v"
-                ></Icon>
-              </View>
-            </TouchableHighlight>
-          </Col>
+          {this.props.markedFiles.length != 0 ? null : (
+            <Col style={styles.rightItem}>
+              <TouchableHighlight
+                onPress={() => {
+                  FileOptions.show();
+                  this.props._onSelectedFile(this.props.file);
+                }}
+                underlayColor="lightgrey"
+                style={styles.optionHighlight}
+              >
+                <View style={styles.rightItem}>
+                  <Icon
+                    style={[{ fontSize: 20, marginTop: 4, color: "#9E9E9E" }]}
+                    type="FontAwesome5"
+                    name="ellipsis-v"
+                  ></Icon>
+                </View>
+              </TouchableHighlight>
+            </Col>
+          )}
         </Row>
       </TouchableNativeFeedback>
     );

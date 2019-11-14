@@ -1,4 +1,4 @@
-import { IFile } from "../models/file";
+import { IFile } from "../models/IFile";
 import { Icon } from "native-base";
 import React from "react";
 
