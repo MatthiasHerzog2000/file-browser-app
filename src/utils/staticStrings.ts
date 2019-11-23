@@ -1,4 +1,4 @@
-export const TYPE_DIR = "Directory";
+export const TYPE_DIR = "directory";
 export const ACTIONSHEET_TITLE = "Optionen";
 export const RENAME_OPTION = "Umbenennen";
 export const MORE_INFORMATION_OPTION = "Mehr Informationen";

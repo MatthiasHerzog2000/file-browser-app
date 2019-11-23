@@ -1,4 +1,5 @@
 import { IFile } from "../../models/IFile";
+import { IDownloadNotification } from "../../models/IDownloadNotification";
 
 export default interface IHomeState {
   directory: IFile;
@@ -8,4 +9,5 @@ export default interface IHomeState {
   fileDetailsModalVisible: boolean;
   selectedFile: IFile;
   markedFiles: IFile[];
+  downloads: IDownloadNotification[];
 }

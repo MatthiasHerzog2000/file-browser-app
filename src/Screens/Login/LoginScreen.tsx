@@ -70,7 +70,7 @@ export default class LoginScreen extends Component<ILoginProps, ILoginState> {
       return <LoadingComponent></LoadingComponent>;
     } else {
       return (
-        <Container style={globalStyles.header}>
+        <Container style={[globalStyles.header, { backgroundColor: "#fffff" }]}>
           <Content
             contentContainerStyle={{
               flex: 1,

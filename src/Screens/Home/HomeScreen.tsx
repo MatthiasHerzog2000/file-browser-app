@@ -6,14 +6,15 @@ import {
   BackHandler,
   NativeEventSubscription,
   Alert,
-  StatusBar,
   NativeSyntheticEvent,
   NativeScrollEvent
 } from "react-native";
+import { Notifications } from "expo";
 import PathService from "../../services/PathService";
+import * as FileSystem from "expo-file-system";
 import AuthService from "../../services/AuthService";
 import { IFile } from "../../models/IFile";
-import { Button, Content, Container, Drawer } from "native-base";
+import { Content, Container, Drawer } from "native-base";
 import IHomeProps from "./IHomeProps";
 import IHomeState from "./IHomeState";
 import FileComponent from "../../components/file-component/FileComponent";
@@ -27,6 +28,7 @@ import FileDetailsComponent from "../../components/file-details-component/FileDe
 import emitter from "tiny-emitter/instance";
 import { FileOption } from "../../utils/FileOptionsEnum";
 import FooterComponent from "../../components/footer-component/FooterComponent";
+import { IError } from "../../models/IError";
 var backHandler: NativeEventSubscription;
 export default class HomeScreen extends Component<IHomeProps, IHomeState> {
   drawer: any = {};
@@ -41,23 +43,34 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
     fabsVisible: true,
     fileDetailsModalVisible: false,
     selectedFile: undefined,
-    markedFiles: []
+    markedFiles: [],
+    downloads: []
   };
   static navigationOptions = {
     header: null
   };
   async componentWillMount() {
-    emitter.on("OptionsClicked", buttonIndex => {
+    emitter.on("OptionsClicked", async buttonIndex => {
       if (FileOption.More_Information === buttonIndex) {
         this.setState({ fileDetailsModalVisible: true });
+      } else if (FileOption.Download === buttonIndex) {
+        const success = await PathService.downloadFile(
+          this.state.selectedFile.path,
+          this.state.selectedFile.name,
+          this.state.selectedFile.type,
+          this._onDownloadProgress
+        );
       }
     });
-    console.log("cwm");
     this.setState({ isLoading: true });
-    let directory: IFile = await PathService.getFiles(
+    let directory: IFile | IError = await PathService.getFiles(
       await AuthService.getCurrentPath()
     );
-    this.setState({ directory: directory, isLoading: false });
+    if ("err" in directory) {
+      this.props.navigation.navigate("Auth");
+    } else {
+      this.setState({ directory: directory as IFile, isLoading: false });
+    }
   }
   componentDidMount() {
     backHandler = BackHandler.addEventListener(
@@ -85,9 +98,9 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
       .slice(0, path.split("/").length - 1)
       .join("/");
     if (path != (await AuthService.getInitPath())) {
-      let directory: IFile = await PathService.getFiles(lastPath);
+      let directory: IFile | IError = await PathService.getFiles(lastPath);
       AuthService.setCurrentPath(lastPath);
-      this.setState({ directory: directory });
+      this.setState({ directory: directory as IFile });
     } else {
       this._renderAlert();
     }
@@ -121,18 +134,50 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
     } else {
     }
   };
+  _onDownloadProgress = async (progress: FileSystem.DownloadProgressData) => {
+    const copyDownloads = this.state.downloads;
+    var exisitingNotification = this.state.downloads.find(
+      s => s.totalBytes === progress.totalBytesExpectedToWrite
+    );
+    if (!exisitingNotification) {
+      exisitingNotification = {
+        id: 0,
+        file: this.state.selectedFile.name,
+        totalBytes: progress.totalBytesExpectedToWrite
+      };
+    } else {
+      copyDownloads.splice(
+        copyDownloads.findIndex(cd => cd.id === exisitingNotification.id),
+        1
+      );
+      Notifications.dismissNotificationAsync(exisitingNotification.id);
+    }
+    if (progress.totalBytesWritten !== progress.totalBytesExpectedToWrite) {
+      const notificationId = await Notifications.presentLocalNotificationAsync({
+        title: `Download ${this.state.selectedFile.name}`,
+        body: `${Math.round(
+          (progress.totalBytesWritten * 100) /
+            progress.totalBytesExpectedToWrite
+        )}% Downloaded`
+      });
+      exisitingNotification.id = notificationId;
+      copyDownloads.push(exisitingNotification);
+      this.setState({ downloads: copyDownloads });
+    }
+  };
   _onPressFolder = async (file: IFile) => {
+    console.log(file);
     if (this.state.markedFiles.length != 0) {
       this._markFileOrFolder(file);
     } else {
       AuthService.setCurrentPath(file.path);
 
-      let directory: IFile = await PathService.getFiles(file.path);
+      let directory: IFile | IError = await PathService.getFiles(file.path);
       this.props.navigation.navigate({
         routeName: "Home",
         params: { path: file.path }
       });
-      this.setState({ directory: directory });
+      this.setState({ directory: directory as IFile });
     }
   };
   _onTextChange = (text: string) => {
@@ -230,6 +275,7 @@ export default class HomeScreen extends Component<IHomeProps, IHomeState> {
             ) : null}
             {this.state.selectedFile ? (
               <FileDetailsComponent
+                key={this.state.selectedFile.path}
                 setModalVisible={this._setModalVisible}
                 fileDetailsModalVisible={this.state.fileDetailsModalVisible}
                 selectedFile={this.state.selectedFile}
